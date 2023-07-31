@@ -49,12 +49,12 @@ const SignUpForm = () => {
     return (
         <div className="sign-up-container">
             <h2>Don't have an account?</h2>
-            <span>Sign Up with your Email and Password</span>
+            <span>Sign up with your email and password</span>
             <form onSubmit={handleSubmit}>
                 <FormInput label="Display Name" name="displayName" type="text" onChange={handleChange} value={displayName} required/>
                 <FormInput label="Email" name="email" type="email" onChange={handleChange} value={email} required/>
                 <FormInput label="Password" name="password" type="password" onChange={handleChange} value={password} required/>
-                <FormInput label="Confirm Password" name="confirmPassword" type="password" onChange={handleChange} value={password} required/>
+                <FormInput label="Confirm Password" name="confirmPassword" type="password" onChange={handleChange} value={confirmPassword} required/>
                 <Button type="submit">Sign Up</Button>
             </form>
 
