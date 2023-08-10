@@ -1,10 +1,8 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { getRedirectResult } from 'firebase/auth';
-import { UserContext } from "../../contexts/user.context";
 
 import { auth, 
     signInWithGooglePopup, 
-    signInWithGoogleRedirect, 
     signInAuthUserWithEmailAndPassword,
     createUserDocumentFromAuth 
 } from '../../utils/firebase/firebase.utils';
@@ -22,12 +20,9 @@ const SignInForm = () => {
     const [formFields, setFormFields] = useState(defaultFormFields);
     const { email, password } = formFields;
 
-    const { setCurrentUser } = useContext(UserContext);
-
     useEffect(() => {
         (async () => {
             const response = await getRedirectResult(auth);
-            console.log(response);
             if (response) {
                 await createUserDocumentFromAuth(response.user);
             }
@@ -35,9 +30,17 @@ const SignInForm = () => {
     }, []);
 
     const signInWithGoogle = async () => {
-        // destructure response
-        const {user} = await signInWithGooglePopup();
-        await createUserDocumentFromAuth(user);
+        try {
+            await signInWithGooglePopup();
+        } catch (error) {
+            switch (error.code) {
+                case "auth/popup-closed-by-user":
+                    console.log('user closed the Google Sign-In Popup') 
+                    break;
+                default:
+                    console.log(error);
+            }
+        }
     };
 
     const resetFormFields = () => {
@@ -55,11 +58,8 @@ const SignInForm = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(email, password);
         try {
-            const {user} = await signInAuthUserWithEmailAndPassword(email, password);
-            setCurrentUser(user);
-            console.log('user: ', user);
+            await signInAuthUserWithEmailAndPassword(email, password);
             resetFormFields();
         } catch (error) {
             switch (error.code) {
